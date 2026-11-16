@@ -1,0 +1,171 @@
+// CapstoneFlow – mô hình dữ liệu (Prisma ORM 7).
+// 4 bảng đầu là bảng của Better Auth; 4 model nghiệp vụ nằm phía dưới.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  LECTURER
+  ADMIN
+}
+
+enum TopicStatus {
+  OPEN
+  CLOSED
+}
+
+enum RegistrationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// ───────────────────────── Better Auth ─────────────────────────
+
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  // Vai trò KHÔNG nhận từ form đăng ký (input: false trong src/lib/auth.ts).
+  role          Role     @default(STUDENT)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions      Session[]
+  accounts      Account[]
+  topics        Topic[]
+  registrations Registration[]
+
+  @@index([role])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// ───────────────────────── Nghiệp vụ ─────────────────────────
+
+/// Bộ môn của Khoa. Mỗi đề tài thuộc đúng một bộ môn (1–n).
+model Department {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  topics    Topic[]
+
+  @@map("department")
+}
+
+/// Thẻ công nghệ / lĩnh vực. Quan hệ n–n với Topic (bảng nối do Prisma tự tạo).
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  topics    Topic[]
+
+  @@map("tag")
+}
+
+model Topic {
+  id           String      @id @default(cuid())
+  title        String
+  description  String
+  objectives   String?
+  requirements String?
+  maxStudents  Int         @default(1)
+  status       TopicStatus @default(OPEN)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  lecturerId   String
+  lecturer     User        @relation(fields: [lecturerId], references: [id], onDelete: Restrict)
+  departmentId String
+  department   Department  @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+
+  tags          Tag[]
+  registrations Registration[]
+
+  @@index([lecturerId])
+  @@index([departmentId])
+  @@index([status, updatedAt])
+  @@map("topic")
+}
+
+/// Một sinh viên đăng ký một đề tài. Mỗi cặp (đề tài, sinh viên) chỉ có một dòng.
+model Registration {
+  id           String             @id @default(cuid())
+  studentCode  String
+  className    String?
+  phone        String?
+  message      String?
+  status       RegistrationStatus @default(PENDING)
+  // Phản hồi của giảng viên khi nhận / từ chối.
+  lecturerNote String?
+  respondedAt  DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  topicId   String
+  topic     Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([topicId, studentId])
+  @@index([studentId])
+  @@index([topicId, status])
+  @@map("registration")
+}
