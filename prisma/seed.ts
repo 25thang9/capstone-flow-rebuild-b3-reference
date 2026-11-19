@@ -20,20 +20,20 @@ const DAY = 24 * 60 * 60 * 1000;
 // Mốc thời gian cố định để thứ tự "mới cập nhật" giống nhau ở mọi máy.
 const BASE_TIME = new Date("2026-11-10T02:00:00.000Z").getTime();
 
-const ACCOUNTS: { email: string; name: string; role: Role }[] = [
+const ACCOUNTS: { email: string; name: string; role: Role; institutionCode?: string }[] = [
   { email: "admin@example.com", name: "Quản trị Khoa", role: "ADMIN" },
-  { email: "gv.khoa@example.com", name: "Trần Minh Khoa", role: "LECTURER" },
-  { email: "gv.ha@example.com", name: "Lê Thị Thu Hà", role: "LECTURER" },
-  { email: "gv.bao@example.com", name: "Phạm Quốc Bảo", role: "LECTURER" },
-  { email: "gv.yen@example.com", name: "Nguyễn Hoàng Yến", role: "LECTURER" },
-  { email: "sv.an@example.com", name: "Nguyễn Văn An", role: "STUDENT" },
-  { email: "sv.bich@example.com", name: "Trần Thị Bích", role: "STUDENT" },
-  { email: "sv.cuong@example.com", name: "Lê Hoàng Cường", role: "STUDENT" },
-  { email: "sv.dung@example.com", name: "Phạm Thuỳ Dung", role: "STUDENT" },
-  { email: "sv.duc@example.com", name: "Võ Minh Đức", role: "STUDENT" },
-  { email: "sv.han@example.com", name: "Đặng Gia Hân", role: "STUDENT" },
-  { email: "sv.huy@example.com", name: "Bùi Quang Huy", role: "STUDENT" },
-  { email: "sv.lan@example.com", name: "Hồ Ngọc Lan", role: "STUDENT" },
+  { email: "gv.khoa@example.com", name: "Trần Minh Khoa", role: "LECTURER", institutionCode: "GV0001" },
+  { email: "gv.ha@example.com", name: "Lê Thị Thu Hà", role: "LECTURER", institutionCode: "GV0002" },
+  { email: "gv.bao@example.com", name: "Phạm Quốc Bảo", role: "LECTURER", institutionCode: "GV0003" },
+  { email: "gv.yen@example.com", name: "Nguyễn Hoàng Yến", role: "LECTURER", institutionCode: "GV0004" },
+  { email: "sv.an@example.com", name: "Nguyễn Văn An", role: "STUDENT", institutionCode: "SV0001" },
+  { email: "sv.bich@example.com", name: "Trần Thị Bích", role: "STUDENT", institutionCode: "SV0002" },
+  { email: "sv.cuong@example.com", name: "Lê Hoàng Cường", role: "STUDENT", institutionCode: "SV0003" },
+  { email: "sv.dung@example.com", name: "Phạm Thuỳ Dung", role: "STUDENT", institutionCode: "SV0004" },
+  { email: "sv.duc@example.com", name: "Võ Minh Đức", role: "STUDENT", institutionCode: "SV0005" },
+  { email: "sv.han@example.com", name: "Đặng Gia Hân", role: "STUDENT", institutionCode: "SV0006" },
+  { email: "sv.huy@example.com", name: "Bùi Quang Huy", role: "STUDENT", institutionCode: "SV0007" },
+  { email: "sv.lan@example.com", name: "Hồ Ngọc Lan", role: "STUDENT", institutionCode: "SV0008" },
 ];
 
 const DEPARTMENTS = [
@@ -352,13 +352,14 @@ async function main() {
   for (const account of ACCOUNTS) {
     const user = await prisma.user.upsert({
       where: { email: account.email },
-      update: { name: account.name, role: account.role },
+      update: { name: account.name, role: account.role, institutionCode: account.institutionCode ?? null },
       create: {
         id: crypto.randomUUID(),
         email: account.email,
         name: account.name,
         role: account.role,
         emailVerified: true,
+        institutionCode: account.institutionCode ?? null
       },
     });
     userIdByEmail.set(account.email, user.id);

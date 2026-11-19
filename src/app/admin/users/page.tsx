@@ -76,6 +76,7 @@ async function Users({ searchParams }: Pick<PageProps<"/admin/users">, "searchPa
             <TableHeader>
               <TableRow>
                 <TableHead>Người dùng</TableHead>
+                <TableHead>Mã số</TableHead>
                 <TableHead className="text-right">Đề tài</TableHead>
                 <TableHead className="text-right">Đăng ký</TableHead>
                 <TableHead>Ngày tạo</TableHead>
@@ -88,6 +89,9 @@ async function Users({ searchParams }: Pick<PageProps<"/admin/users">, "searchPa
                   <TableCell>
                     <p className="font-medium">{user.name}</p>
                     <p className="text-xs text-muted-foreground">{user.email}</p>
+                  </TableCell>
+                  <TableCell>
+                    {user.institutionCode ?? "—"}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">{user._count.topics}</TableCell>
                   <TableCell className="text-right tabular-nums">{user._count.registrations}</TableCell>
