@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Be_Vietnam_Pro, Source_Serif_4 } from "next/font/google";
+import { Be_Vietnam_Pro,} from "next/font/google";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -11,14 +11,8 @@ import "./globals.css";
 // next/font tự tải và host phông chữ: không gọi Google Fonts lúc chạy, không bị giật chữ.
 const beVietnam = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-be-vietnam",
-  display: "swap",
-});
-
-const sourceSerif = Source_Serif_4({
-  subsets: ["latin", "vietnamese"],
-  variable: "--font-source-serif",
   display: "swap",
 });
 
@@ -29,12 +23,16 @@ export const metadata: Metadata = {
   },
   description:
     "Tra cứu đề tài đồ án của Khoa Vật lý – Vật lý Kỹ thuật, gửi đăng ký và theo dõi phản hồi của giảng viên.",
+  icons: {
+    icon: "/images/Logo_project.png",
+    shortcut: "/images/Logo_project.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     // suppressHydrationWarning: next-themes gắn class "dark" vào <html> trước khi React chạy.
-    <html lang="vi" className={`${beVietnam.variable} ${sourceSerif.variable}`} suppressHydrationWarning>
+    <html lang="vi" className={`${beVietnam.variable}`} suppressHydrationWarning>
       <body className="flex min-h-dvh flex-col">
         <a
           href="#main"

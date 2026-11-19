@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import type { TopicCardData } from "../queries";
 
 type HeadingLevel = 2 | 3;
+type TopicListLayout = "rows" | "cards";
 
 /** Thanh nhỏ cho thấy đề tài đã kín bao nhiêu chỗ. Chỉ để nhìn; con số đã có ở ngay bên cạnh. */
 export function CapacityBar({ accepted, max, className }: { accepted: number; max: number; className?: string }) {
@@ -81,18 +82,103 @@ export function TopicRow({ topic, headingLevel = 3 }: { topic: TopicCardData; he
   );
 }
 
-export function TopicList({ topics, headingLevel }: { topics: TopicCardData[]; headingLevel?: HeadingLevel }) {
+function TopicCard({ topic, headingLevel = 3 }: { topic: TopicCardData; headingLevel?: HeadingLevel }) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
+  const acceptedCount = topic._count.registrations;
+  const availability = getAvailability({ status: topic.status, maxStudents: topic.maxStudents, acceptedCount });
+
   return (
-    <ul className="animate-in divide-y border-y duration-500 fade-in slide-in-from-bottom-2">
+    <li className="group relative flex min-h-72 flex-col rounded-2xl border bg-card p-5 transition-all duration-200 hover:border-primary/40 hover:shadow-card motion-safe:hover:-translate-y-1">
+      <div className="flex items-center justify-between gap-3">
+        <span className="min-w-0 truncate text-sm text-muted-foreground">{topic.department.name}</span>
+        <AvailabilityBadge availability={availability} />
+      </div>
+
+      <Heading className="mt-4 line-clamp-2 text-lg leading-snug font-semibold">
+        <Link
+          href={`/topics/${topic.id}`}
+          className="outline-none after:absolute after:inset-0 group-hover:text-link focus-visible:underline"
+        >
+          {topic.title}
+        </Link>
+      </Heading>
+      <p className="mt-2 line-clamp-3 text-muted-foreground">{topic.description}</p>
+
+      {topic.tags.length > 0 ? (
+        <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Thẻ">
+          {topic.tags.map((tag) => (
+            <li key={tag.slug} className="rounded border bg-background px-1.5 py-0.5 text-xs text-muted-foreground">
+              {tag.name}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      <div className="mt-auto flex items-center justify-between gap-4 border-t pt-3">
+        <p className="min-w-0 truncate text-sm font-medium">{topic.lecturer.name}</p>
+        <div className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
+          <span>
+            {acceptedCount}/{topic.maxStudents}
+          </span>
+          <CapacityBar accepted={acceptedCount} max={topic.maxStudents} className="w-12" />
+        </div>
+      </div>
+    </li>
+  );
+}
+
+export function TopicList({
+  topics,
+  headingLevel,
+  layout = "rows",
+}: {
+  topics: TopicCardData[];
+  headingLevel?: HeadingLevel;
+  layout?: TopicListLayout;
+}) {
+  const isCards = layout === "cards";
+
+  return (
+    <ul
+      aria-label={isCards ? "Đề tài nổi bật" : undefined}
+      className={cn(
+        "animate-in duration-500 fade-in slide-in-from-bottom-2",
+        isCards ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "divide-y border-y",
+      )}
+    >
       {topics.map((topic) => (
-        <TopicRow key={topic.id} topic={topic} headingLevel={headingLevel} />
+        isCards ? (
+          <TopicCard key={topic.id} topic={topic} headingLevel={headingLevel} />
+        ) : (
+          <TopicRow key={topic.id} topic={topic} headingLevel={headingLevel} />
+        )
       ))}
     </ul>
   );
 }
 
 /** Khung chờ có cùng chiều cao với danh sách thật để trang không bị giật khi dữ liệu về. */
-export function TopicListSkeleton({ count = 4 }: { count?: number }) {
+export function TopicListSkeleton({ count = 4, layout = "rows" }: { count?: number; layout?: TopicListLayout }) {
+  if (layout === "cards") {
+    return (
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-hidden="true">
+        {Array.from({ length: count }, (_, index) => (
+          <li key={index} className="flex min-h-80 flex-col rounded-xl border bg-card p-5 sm:p-6">
+            <div className="flex justify-between">
+              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-6 w-12" />
+            </div>
+            <Skeleton className="mt-5 h-6 w-4/5" />
+            <Skeleton className="mt-2 h-4 w-full" />
+            <Skeleton className="mt-1 h-4 w-3/4" />
+            <Skeleton className="mt-4 h-6 w-2/3" />
+            <Skeleton className="mt-auto h-12 w-full" />
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
   return (
     <div className="divide-y border-y" aria-hidden="true">
       {Array.from({ length: count }, (_, index) => (

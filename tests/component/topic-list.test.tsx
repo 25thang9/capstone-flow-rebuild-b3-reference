@@ -36,6 +36,17 @@ describe("TopicList", () => {
     expect(within(row).getByText("Đang nhận")).toBeInTheDocument();
   });
 
+  it("hiện đề tài thành lưới thẻ nổi khi rê chuột", () => {
+    render(<TopicList topics={[makeTopic()]} layout="cards" />);
+
+    const cards = screen.getByRole("list", { name: "Đề tài nổi bật" });
+    expect(cards).toHaveClass("grid", "lg:grid-cols-3");
+    const card = screen.getByRole("link", { name: "Hệ đo nhiệt độ dùng ESP32" }).closest("li") as HTMLElement;
+    expect(card).toHaveClass("hover:shadow-card", "motion-safe:hover:-translate-y-1");
+    expect(within(card).getByText("Vật lý Điện tử")).toBeInTheDocument();
+    expect(within(card).getByText("1/3")).toBeInTheDocument();
+  });
+
   it("hiện danh sách thẻ của đề tài", () => {
     render(<TopicList topics={[makeTopic()]} />);
     const tags = within(screen.getByRole("list", { name: "Thẻ" })).getAllByRole("listitem");

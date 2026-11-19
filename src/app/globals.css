@@ -13,7 +13,7 @@
 
 @theme inline {
   --font-sans: var(--font-be-vietnam), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
-  --font-heading: var(--font-source-serif), ui-serif, Georgia, "Times New Roman", serif;
+--font-heading: var(--font-be-vietnam), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -173,6 +173,7 @@
   h2,
   h3 {
     @apply font-heading;
+    letter-spacing: -0.025em;
     text-wrap: balance;
   }
 

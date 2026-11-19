@@ -21,22 +21,27 @@ type UserMenuProps = {
   email: string;
   roleLabel: string;
   workspace: { href: string; label: string };
+  mobile?: boolean;
 };
 
-export function UserMenu({ name, email, roleLabel, workspace }: UserMenuProps) {
+export function UserMenu({ name, email, roleLabel, workspace, mobile = false }: UserMenuProps) {
   const [signingOut, startTransition] = useTransition();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="gap-2 px-1.5" aria-label={`Tài khoản: ${name}`}>
+        <Button
+          variant="ghost"
+          className={mobile ? "w-full justify-start gap-2 px-3" : "gap-2 px-1.5"}
+          aria-label={`Tài khoản: ${name}`}
+        >
           <span
             aria-hidden="true"
             className="flex size-7 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground"
           >
             {initials(name)}
           </span>
-          <span className="hidden max-w-36 truncate lg:inline">{name}</span>
+          <span className={mobile ? "max-w-40 truncate" : "hidden max-w-36 truncate lg:inline"}>{name}</span>
           <ChevronDownIcon className="text-muted-foreground" aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>

@@ -7,7 +7,7 @@ Kho đề tài đồ án của Khoa Vật lý – Vật lý Kỹ thuật. Giản
   `admin@example.com` · `gv.khoa@example.com` · `sv.an@example.com`
 - **Nhật ký dùng AI:** [AI_LOG.md](AI_LOG.md) · **Luật dự án cho AI:** [AGENTS.md](AGENTS.md)
 
-> Nhánh `rebuild/b3-reference` là **bản tham chiếu** dựng lại bản nền theo mục B.3 của đề bài. Đọc phần lưu ý trong [AI_LOG.md](AI_LOG.md) trước khi dùng.
+> Nhánh `main` hiện là **bản tham chiếu** dựng lại bản nền theo mục B.3 của đề bài. Đọc phần lưu ý trong [AI_LOG.md](AI_LOG.md) trước khi dùng.
 
 ## Ảnh chụp màn hình
 
@@ -19,6 +19,13 @@ Kho đề tài đồ án của Khoa Vật lý – Vật lý Kỹ thuật. Giản
 |---|---|---|
 | ![Chi tiết đề tài](docs/screenshots/03-chi-tiet-de-tai.png) | ![Tổng quan giảng viên](docs/screenshots/04-tong-quan-giang-vien.png) | ![Duyệt đăng ký](docs/screenshots/05-duyet-dang-ky.png) |
 
+## Giao diện trang chủ và điều hướng
+
+- Trang chủ có phần giới thiệu đề tài với tiêu đề chia thành hai dòng, các ô thống kê và gợi ý tìm kiếm theo thẻ.
+- Bốn đề tài mới nhất được trình bày bằng các thẻ thống nhất, có thông tin bộ môn, trạng thái, giảng viên và số lượng đăng ký.
+- Header hiển thị logo nhóm Capstone Tech và logo CapstoneFlow; logo CapstoneFlow cũng được dùng làm favicon.
+- Trên màn hình nhỏ, điều hướng, đăng nhập/đăng ký và đổi giao diện sáng/tối nằm trong menu ba gạch để tránh tràn hoặc xuống dòng.
+
 ## Công nghệ và phiên bản
 
 | Thành phần | Phiên bản | Ghi chú |
@@ -28,7 +35,7 @@ Kho đề tài đồ án của Khoa Vật lý – Vật lý Kỹ thuật. Giản
 | Prisma ORM + PostgreSQL (Neon) | 7.10 | generator `prisma-client`, adapter `@prisma/adapter-pg` |
 | Better Auth | 1.7 | Email + mật khẩu, 3 vai trò |
 | Zod | 4 | Validate ở server cho mọi thao tác ghi |
-| Vitest + React Testing Library · Playwright | 5 · 1.65 | 85 unit/component test, 10 kịch bản E2E |
+| Vitest + React Testing Library · Playwright | 5 · 1.65 | 88 unit/component test, 10 kịch bản E2E |
 
 ## Chạy local
 
@@ -120,7 +127,7 @@ Quyền được kiểm tra ở server trong `src/lib/dal.ts` (`requireUser`, `r
 | CRUD ≥ 2 thực thể; validate Zod; lỗi thân thiện | ✅ | Đề tài, Đăng ký, Bộ môn, Thẻ |
 | Tìm kiếm / lọc / phân trang bằng URL `searchParams` | ✅ | `/topics`, `/lecturer/topics`, `/lecturer/registrations`, `/admin/users` |
 | Trực quan hoá dữ liệu | ✅ | Biểu đồ ở `/lecturer` và `/admin` (shadcn Chart), kèm bảng cho trình đọc màn hình |
-| ≥ 10 unit test, ≥ 2 component test, ≥ 2 E2E | ✅ | 70 unit · 15 component · 10 E2E |
+| ≥ 10 unit test, ≥ 2 component test, ≥ 2 E2E | ✅ | 88 unit/component · 10 E2E |
 | CI: lint, typecheck, test, build, E2E | ✅ viết xong, ❌ chưa chạy trên GitHub | `.github/workflows/ci.yml` |
 | Lighthouse Accessibility ≥ 90, Performance ≥ 80 trên 3 trang chính | ✅ đo local | xem bảng dưới |
 | AGENTS.md và AI_LOG.md | ✅ | AI_LOG cần từng thành viên tự ghi |
@@ -145,7 +152,7 @@ Số đo trên production sẽ khác vì có độ trễ mạng tới Neon; cầ
 4. **Bộ lọc nằm trên URL, lọc ở server.** Form lọc là form GET thật (chạy cả khi chưa có JavaScript); có JavaScript thì URL được dọn gọn và ô chọn áp dụng ngay.
 5. **Cache Components + Suspense.** Phần khung của trang được dựng sẵn và hiện tức thì; phần đọc database hay phiên đăng nhập stream vào sau, có khung chờ đúng kích thước.
 6. **Sửa/xoá luôn kèm điều kiện chủ sở hữu.** `updateMany` / `deleteMany` với `where: { id, lecturerId }` rồi kiểm tra `count`, nên không có khoảng hở giữa bước "kiểm tra quyền" và bước "ghi".
-7. **Thiết kế giao diện.** Một bộ token trong `globals.css` (xanh navy lấy từ logo Khoa, bo góc 6px), chữ Be Vietnam Pro cho nội dung và Source Serif 4 cho tiêu đề. Chế độ sáng và tối dùng cùng tên biến, chỉ khác giá trị, nên component không cần viết riêng cho từng chế độ. Chuyển động ngắn, thuần CSS, và tắt khi người dùng bật "giảm chuyển động".
+7. **Thiết kế giao diện.** Một bộ token trong `globals.css` (xanh navy lấy từ nhận diện Khoa, bo góc 6px), chữ Be Vietnam Pro cho nội dung và Source Serif 4 cho tiêu đề. Chế độ sáng và tối dùng cùng tên biến, chỉ khác giá trị, nên component không cần viết riêng cho từng chế độ. Chuyển động ngắn, thuần CSS, và tắt khi người dùng bật "giảm chuyển động". Header dùng logo nhóm Capstone Tech và logo CapstoneFlow; trên màn hình nhỏ, các mục điều hướng, tài khoản và giao diện được gom vào menu.
 
 ## Giới hạn đã biết
 
