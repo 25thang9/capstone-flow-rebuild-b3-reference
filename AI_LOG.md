@@ -8,7 +8,7 @@ Mỗi thành viên tự ghi phần của mình vào bảng dưới đây, mỗi 
 | Ngày | Thành viên | Công cụ | Việc nhờ AI | Prompt (tóm tắt) | Kết quả dùng thế nào | Mình đã kiểm chứng / sửa gì | Commit/PR |
 |---|---|---|---|---|---|---|---|
 | 2026-11-15 | (ghi tên người chạy phiên này) | Claude Code (Claude Fable 5.2) | Dựng lại toàn bộ bản nền trên nhánh `rebuild/b3-reference` để làm bản tham chiếu theo yêu cầu B.3: chuyển sang TypeScript, Tailwind v4 + shadcn/ui, Prisma 7, Better Auth 3 vai trò; thiết kế lại giao diện; viết unit/component/E2E test, CI, AGENTS.md, README | "Clone repo, làm lại giao diện chỉn chu nhưng không quá AI, phù hợp phạm vi đồ án môn học, đề xuất chỗ sai logic" + gửi đề bài PDF và chọn phương án "bản tham chiếu đủ B.3" | AI sinh gần như toàn bộ mã của nhánh này. Dùng làm BẢN THAM CHIẾU; chưa merge vào `main` | AI đã tự chạy: lint, typecheck, 85 unit/component test, 10 kịch bản E2E, build production, mở từng trang trên trình duyệt. **Thành viên chưa tự kiểm chứng** – cần đọc hiểu, chạy lại và ghi kết quả vào đây trước khi dùng | chưa commit |
-|  |  |  |  |  |  |  |  |
+| 2026-11-19 | Nguyễn Nhật Đăng | Copilot SDK trong VS Code | Hoàn thiện giao diện trang chủ và điều hướng responsive: hero, 4 thẻ đề tài, hai logo ở header, menu mobile tích hợp tài khoản và đổi theme | "Chỉnh giao diện trang chủ và header theo các yêu cầu: đưa Tự xuống dòng mới, cân kích thước hai logo, gom điều hướng vào menu trên màn hình nhỏ" | Dùng các thay đổi giao diện và test được cập nhật trên nhánh `main` | AI đã chạy lint, typecheck và Vitest: 88 test đạt. Thành viên cần tự đọc hiểu và kiểm tra giao diện trước khi nộp | [b23ec86](https://github.com/LinhHoang28/capstone-flow-rebuild-b3-reference/commit/b23ec8689550d1636d385e406d562d20b5c690a7) |
 
 ## Lưu ý khi dùng bản tham chiếu 
 
@@ -19,7 +19,7 @@ Mỗi thành viên tự ghi phần của mình vào bảng dưới đây, mỗi 
 
 Mỗi thành viên viết một mục riêng.
 
-### (Tên thành viên)
+### Nguyễn Nhật Đăng
 - Phần mình tự làm hoàn toàn:
 - Phần AI giúp nhiều nhất và mình đã hiểu nó thế nào:
 - Một lần AI sai và cách mình phát hiện:
