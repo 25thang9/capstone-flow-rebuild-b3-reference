@@ -14,7 +14,7 @@ export async function listUsers(filters: UserFilters, pageSize = 10) {
   const contains = { contains: filters.q, mode: "insensitive" } as const;
   const where: Prisma.UserWhereInput = {
     ...(filters.role !== "ALL" ? { role: filters.role } : {}),
-    ...(filters.q ? { OR: [{ name: contains }, { email: contains }] } : {}),
+    ...(filters.q ? { OR: [{ name: contains }, { email: contains }, { institutionCode: contains }] } : {}),
   };
 
   const total = await prisma.user.count({ where });
@@ -31,6 +31,7 @@ export async function listUsers(filters: UserFilters, pageSize = 10) {
       email: true,
       role: true,
       createdAt: true,
+      institutionCode: true,
       _count: { select: { topics: true, registrations: true } },
     },
   });

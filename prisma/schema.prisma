@@ -33,6 +33,7 @@ model User {
   id            String   @id
   name          String
   email         String   @unique
+  institutionCode String? @unique
   emailVerified Boolean  @default(false)
   image         String?
   // Vai trò KHÔNG nhận từ form đăng ký (input: false trong src/lib/auth.ts).
