@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { listTags } from "@/features/catalog/queries";
 import { getPublicStats, listDepartmentsWithOpenTopics } from "@/features/stats/queries";
 import { TopicList, TopicListSkeleton } from "@/features/topics/components/topic-list";
 import { listLatestOpenTopics } from "@/features/topics/queries";
@@ -44,7 +45,7 @@ export default function HomePage() {
           className="absolute -top-40 -right-24 -z-10 size-[34rem] rounded-full bg-[oklch(0.55_0.17_255)] opacity-30 blur-3xl"
         />
 
-        <div className="container-page grid gap-12 py-16 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center lg:py-24">
+        <div className="container-page grid gap-12 py-14 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] lg:items-center lg:py-20">
           <div>
             <p className="animate-rise inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm font-medium">
               <span className="size-1.5 rounded-full bg-[oklch(0.82_0.15_155)]" aria-hidden="true" />
@@ -54,11 +55,11 @@ export default function HomePage() {
               className="animate-rise mt-5 text-4xl leading-[1.12] font-semibold tracking-tight sm:text-5xl lg:text-[3.5rem]"
               style={stagger(1)}
             >
-              Tìm đề tài phù hợp, đăng ký trực tiếp với giảng viên
+              <span className="block">Tìm đúng đề tài.</span>
+              <span className="block">Tự tin bắt đầu đồ án.</span>
             </h1>
             <p className="animate-rise mt-5 max-w-xl text-lg text-white/80" style={stagger(2)}>
-              Tra cứu đề tài theo bộ môn và công nghệ, gửi đăng ký trực tuyến và theo dõi phản hồi của giảng
-              viên ở cùng một nơi.
+              Khám phá đề tài theo bộ môn, công nghệ và giảng viên; đăng ký và theo dõi phản hồi tại một nơi.
             </p>
 
             <form
@@ -84,7 +85,10 @@ export default function HomePage() {
                 Tìm đề tài
               </Button>
             </form>
-            <p className="animate-rise mt-4 text-sm text-white/75" style={stagger(4)}>
+            <Suspense fallback={<div className="mt-4 h-8" aria-hidden="true" />}>
+              <SearchSuggestions />
+            </Suspense>
+            <p className="animate-rise mt-3 text-sm text-white/75" style={stagger(4)}>
               hoặc{" "}
               <Link href="/topics" className="font-medium text-white underline underline-offset-4 hover:no-underline">
                 xem toàn bộ kho đề tài
@@ -93,7 +97,7 @@ export default function HomePage() {
           </div>
 
           <div className="animate-rise" style={stagger(3)}>
-            <Suspense fallback={<Skeleton className="h-56 w-full bg-white/10" />}>
+            <Suspense fallback={<Skeleton className="h-40 w-full bg-white/10" />}>
               <StatsPanel />
             </Suspense>
           </div>
@@ -104,19 +108,19 @@ export default function HomePage() {
         <div className="reveal mb-6 flex flex-wrap items-end justify-between gap-2">
           <div>
             <p className="text-sm font-medium text-link">Mới cập nhật</p>
-            <h2 id="latest-heading" className="mt-1 text-3xl font-semibold tracking-tight">
-              Đề tài đang nhận sinh viên
+            <h2 id="latest-heading" className="mt-2 text-3xl font-semibold tracking-tight">
+              Đề tài nổi bật
             </h2>
           </div>
           <Link
             href="/topics"
-            className="group inline-flex items-center gap-1 text-sm font-medium text-link hover:underline"
+            className="group inline-flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary/40 hover:text-link"
           >
             Xem tất cả
             <ArrowRightIcon className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           </Link>
         </div>
-        <Suspense fallback={<TopicListSkeleton count={4} />}>
+        <Suspense fallback={<TopicListSkeleton count={4} layout="cards" />}>
           <LatestTopics />
         </Suspense>
       </section>
@@ -125,7 +129,7 @@ export default function HomePage() {
         <div className="container-page py-16">
           <div className="reveal">
             <p className="text-sm font-medium text-link">Duyệt nhanh</p>
-            <h2 id="department-heading" className="mt-1 text-3xl font-semibold tracking-tight">
+            <h2 id="department-heading" className="mt-2 text-3xl font-semibold tracking-tight">
               Tìm theo bộ môn
             </h2>
           </div>
@@ -138,7 +142,7 @@ export default function HomePage() {
       <section className="container-page py-16" aria-labelledby="steps-heading">
         <div className="reveal">
           <p className="text-sm font-medium text-link">Ba bước</p>
-          <h2 id="steps-heading" className="mt-1 text-3xl font-semibold tracking-tight">
+          <h2 id="steps-heading" className="mt-2 text-3xl font-semibold tracking-tight">
             Quy trình đăng ký
           </h2>
         </div>
@@ -199,19 +203,43 @@ async function StatsPanel() {
   ];
 
   return (
-    <dl className="divide-y divide-white/15 rounded-xl bg-white/[0.07] ring-1 ring-white/20 backdrop-blur-sm">
+    <dl className="grid gap-3 sm:grid-cols-3">
       {rows.map((row) => (
-        <div key={row.label} className="flex items-baseline justify-between gap-4 px-6 py-5">
-          <dt className="text-white/80">{row.label}</dt>
-          <dd className="font-heading text-4xl font-semibold tabular-nums">{row.value}</dd>
+        <div key={row.label} className="rounded-xl border border-white/15 bg-white/[0.07] p-4 backdrop-blur-sm">
+          <dt className="text-sm leading-snug text-white/75">{row.label}</dt>
+          <dd className="mt-3 font-heading text-4xl font-semibold tabular-nums">{row.value}</dd>
         </div>
       ))}
     </dl>
   );
 }
 
+async function SearchSuggestions() {
+  const tags = (await listTags())
+    .filter((tag) => tag._count.topics > 0)
+    .sort((first, second) => second._count.topics - first._count.topics)
+    .slice(0, 3);
+
+  if (tags.length === 0) return null;
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
+      <span className="text-white/75">Gợi ý tìm nhanh:</span>
+      {tags.map((tag) => (
+        <Link
+          key={tag.slug}
+          href={`/topics?tag=${tag.slug}`}
+          className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-white transition-colors hover:bg-white/20"
+        >
+          {tag.name}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
 async function LatestTopics() {
-  const topics = await listLatestOpenTopics(5);
+  const topics = await listLatestOpenTopics(4);
   if (topics.length === 0) {
     return (
       <EmptyState
@@ -221,7 +249,7 @@ async function LatestTopics() {
       />
     );
   }
-  return <TopicList topics={topics} />;
+  return <TopicList topics={topics} layout="cards" />;
 }
 
 async function DepartmentLinks() {
